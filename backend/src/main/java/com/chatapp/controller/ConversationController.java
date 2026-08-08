@@ -53,6 +53,9 @@ public class ConversationController {
             @PathVariable Long id,
             @RequestBody MessageRequest request,
             @AuthenticationPrincipal User user) {
+        if (request.getFileUrl() != null && !request.getFileUrl().trim().isEmpty()) {
+            return ResponseEntity.ok(messageService.sendMessageWithFile(id, request, user.getId(), request.getFileUrl()));
+        }
         return ResponseEntity.ok(messageService.sendMessage(id, request, user.getId()));
     }
 }

@@ -1,5 +1,10 @@
 import apiClient from './client';
-import type { Conversation, Message, MessageRequest } from '@/types';
+import type { Conversation, Message, MessageRequest, User } from '@/types';
+
+export async function searchUsers(query: string): Promise<User[]> {
+  const response = await apiClient.get<User[]>('/users/search', { params: { q: query } });
+  return response.data;
+}
 
 export async function fetchConversations(): Promise<Conversation[]> {
   const response = await apiClient.get<Conversation[]>('/conversations');

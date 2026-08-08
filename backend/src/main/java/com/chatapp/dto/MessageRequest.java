@@ -7,4 +7,5 @@ public class MessageRequest {
     private String content;
     private String clientMessageId;
     private Long replyToId;
+    private String fileUrl;
 }

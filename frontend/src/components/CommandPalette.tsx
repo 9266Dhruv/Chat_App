@@ -2,7 +2,9 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, MessageSquare, LogOut, Command } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
-import type { Conversation } from '@/types';
+import { searchUsers, createConversation } from '@/api/chatApi';
+import type { Conversation, User } from '@/types';
+import { UserPlus } from 'lucide-react';
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -14,24 +16,50 @@ interface CommandPaletteProps {
 export function CommandPalette({ isOpen, onClose, conversations, onSelectConversation }: CommandPaletteProps) {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [globalUsers, setGlobalUsers] = useState<User[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const logout = useAuthStore((s) => s.logout);
+  const me = useAuthStore((s) => s.user);
 
-  const filtered = conversations.filter((c) => {
+  useEffect(() => {
+    if (query.trim().length >= 2) {
+      searchUsers(query).then(users => {
+        // Filter out ourselves
+        setGlobalUsers(users.filter(u => u.id !== me?.id));
+      }).catch(console.error);
+    } else {
+      setGlobalUsers([]);
+    }
+  }, [query, me]);
+
+  const filteredConversations = conversations.filter((c) => {
     if (!query.trim()) return true;
     const q = query.toLowerCase();
     return (
       c.title?.toLowerCase().includes(q) ||
-      c.members?.some((m) => m.displayName?.toLowerCase().includes(q))
+      c.members?.some((m) => m.displayName?.toLowerCase().includes(q) || m.username.toLowerCase().includes(q))
     );
   });
 
   const actions = [
-    ...filtered.map((c) => ({
+    ...filteredConversations.map((c) => ({
       id: `conv-${c.id}`,
-      label: c.title || c.members?.map((m) => m.displayName).join(', ') || 'Conversation',
+      label: c.title || c.members?.filter(m => m.id !== me?.id).map((m) => m.username).join(', ') || 'Saved Messages',
       icon: 'conversation' as const,
       action: () => onSelectConversation(c.id),
+    })),
+    ...globalUsers.map((u) => ({
+      id: `user-${u.id}`,
+      label: `Start chat with ${u.username} (${u.displayName})`,
+      icon: 'user' as const,
+      action: async () => {
+        try {
+          const conv = await createConversation('', [u.id]);
+          onSelectConversation(conv.id);
+        } catch (err) {
+          console.error(err);
+        }
+      },
     })),
     {
       id: 'logout',
@@ -134,6 +162,8 @@ export function CommandPalette({ isOpen, onClose, conversations, onSelectConvers
                 >
                   {action.icon === 'conversation' ? (
                     <MessageSquare className="w-4 h-4 shrink-0" style={{ color: 'var(--text-muted)' }} />
+                  ) : action.icon === 'user' ? (
+                    <UserPlus className="w-4 h-4 shrink-0" style={{ color: 'var(--accent)' }} />
                   ) : (
                     <LogOut className="w-4 h-4 shrink-0" style={{ color: 'var(--danger)' }} />
                   )}
