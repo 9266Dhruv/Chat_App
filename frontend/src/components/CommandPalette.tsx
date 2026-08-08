@@ -6,6 +6,8 @@ import { searchUsers, createConversation } from '@/api/chatApi';
 import type { Conversation, User } from '@/types';
 import { UserPlus } from 'lucide-react';
 
+import { useQueryClient } from '@tanstack/react-query';
+
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
@@ -20,6 +22,7 @@ export function CommandPalette({ isOpen, onClose, conversations, onSelectConvers
   const inputRef = useRef<HTMLInputElement>(null);
   const logout = useAuthStore((s) => s.logout);
   const me = useAuthStore((s) => s.user);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (query.trim().length >= 2) {
@@ -55,6 +58,7 @@ export function CommandPalette({ isOpen, onClose, conversations, onSelectConvers
       action: async () => {
         try {
           const conv = await createConversation('', [u.id]);
+          queryClient.invalidateQueries({ queryKey: ['conversations'] });
           onSelectConversation(conv.id);
         } catch (err) {
           console.error(err);

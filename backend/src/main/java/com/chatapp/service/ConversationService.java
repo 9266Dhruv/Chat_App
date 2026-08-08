@@ -66,6 +66,21 @@ public class ConversationService {
             }
         }
 
+        // Prevent duplicate 1-on-1 conversations
+        if (members.size() == 2) {
+            List<Conversation> existingConvs = conversationRepository.findByMemberId(creatorId);
+            for (Conversation c : existingConvs) {
+                if (c.getMembers().size() == 2 && c.getMembers().containsAll(members)) {
+                    // Return the existing conversation instead of creating a new one
+                    MessageResponse lastMsg = messageRepository
+                        .findTopByConversationIdOrderByCreatedAtDesc(c.getId())
+                        .map(m -> MessageResponse.from(m, reactionRepository.findByMessageId(m.getId())))
+                        .orElse(null);
+                    return ConversationResponse.from(c, lastMsg);
+                }
+            }
+        }
+
         Conversation conv = Conversation.builder()
                 .title(request.getTitle())
                 .members(members)
