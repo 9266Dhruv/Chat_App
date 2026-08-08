@@ -405,7 +405,7 @@ export default function ChatPage() {
         }
         .chat-wrapper .msg .avatar { width: 35px; height: 35px; }
         .chat-wrapper .body {
-          max-width: min(650px, calc(100% - 50px));
+          max-width: min(550px, calc(100% - 50px));
           min-width: 0;
         }
         .chat-wrapper .msg.me-msg .body {
@@ -492,13 +492,23 @@ export default function ChatPage() {
         .chat-wrapper .composer {
           border-top: 1px solid #15181d;
           padding: 11px 28px;
-          display: flex;
-          align-items: center;
-          gap: 12px;
           min-width: 0;
           position: relative;
           z-index: 5;
           background: #070809;
+        }
+        .chat-wrapper .messages-inner {
+          max-width: 1000px;
+          margin: 0 auto;
+          width: 100%;
+        }
+        .chat-wrapper .composer-inner {
+          max-width: 1000px;
+          margin: 0 auto;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 12px;
         }
         .chat-wrapper .input {
           height: 55px;
@@ -638,9 +648,10 @@ export default function ChatPage() {
                 </header>
 
                 <section className="messages">
-                  <div className="day">
-                    <span>Chat History</span>
-                  </div>
+                  <div className="messages-inner">
+                    <div className="day">
+                      <span>Chat History</span>
+                    </div>
 
                   {messages.map((msg) => {
                     const isMe = msg.sender?.id === user?.id;
@@ -677,24 +688,27 @@ export default function ChatPage() {
                   ))}
                   
                   <div ref={messagesEndRef} />
+                  </div>
                 </section>
 
                 <footer className="composer">
-                  <div className="input">
-                    <span className="plus">+</span>
-                    <input 
-                      type="text"
-                      placeholder="Type a message... (Press ? for shortcuts)"
-                      value={inputText}
-                      onChange={handleTypingInput}
-                      onKeyDown={handleKeyDown}
-                    />
+                  <div className="composer-inner">
+                    <div className="input">
+                      <span className="plus">+</span>
+                      <input 
+                        type="text"
+                        placeholder="Type a message... (Press ? for shortcuts)"
+                        value={inputText}
+                        onChange={handleTypingInput}
+                        onKeyDown={handleKeyDown}
+                      />
+                    </div>
+                    <button className="send" onClick={handleSend} disabled={!inputText.trim()}>
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="m4 12 16-8-4 16-4-6-8-2Z" fill="currentColor" />
+                      </svg>
+                    </button>
                   </div>
-                  <button className="send" onClick={handleSend} disabled={!inputText.trim()}>
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="m4 12 16-8-4 16-4-6-8-2Z" fill="currentColor" />
-                    </svg>
-                  </button>
                 </footer>
               </>
             )})() : (
