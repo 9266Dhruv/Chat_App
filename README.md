@@ -6,7 +6,6 @@
   <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql" />
   <img src="https://img.shields.io/badge/WebSocket-STOMP-FF6600" />
-  <img src="https://img.shields.io/badge/License-MIT-green.svg" />
 </p>
 
 <p align="center">
@@ -156,8 +155,4 @@ Session cookies require server-side session storage and sticky load balancing. J
 | **Idempotency** | `clientMessageId` UUID deduplication prevents replay attacks |
 | **CORS** | Configured origins proxying securely through Vite in dev |
 
----
 
-## License
-
-MIT License — feel free to use this project for learning or as a starter template.
