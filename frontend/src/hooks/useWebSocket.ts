@@ -32,7 +32,10 @@ export function useWebSocket(
     if (!accessToken) return;
 
     const client = new Client({
-      webSocketFactory: () => new SockJS(`/ws?token=${accessToken}`),
+      webSocketFactory: () => {
+        const wsUrl = import.meta.env.VITE_WS_URL || '/ws';
+        return new SockJS(`${wsUrl}?token=${accessToken}`);
+      },
       reconnectDelay: 0, // We handle reconnection ourselves
       onConnect: () => {
         setConnectionStatus('CONNECTED');
