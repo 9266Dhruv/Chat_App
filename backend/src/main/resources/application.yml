@@ -2,12 +2,12 @@ spring:
   application:
     name: chatapp-backend
 
-  # Default profile: PostgreSQL
+  # H2 File-Based Database (Saves data permanently to a local file)
   datasource:
-    url: jdbc:postgresql://localhost:5432/chatdb
-    username: chatapp
-    password: chatapp
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:file:./chatdb
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
 
   jpa:
     hibernate:
@@ -16,7 +16,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.H2Dialect
 
   servlet:
     multipart:

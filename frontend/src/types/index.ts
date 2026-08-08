@@ -59,6 +59,7 @@ export interface MessageRequest {
   content: string;
   clientMessageId: string;
   replyToId: number | null;
+  fileUrl?: string | null;
 }
 
 export interface TypingEvent {

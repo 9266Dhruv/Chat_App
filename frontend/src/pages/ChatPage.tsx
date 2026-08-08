@@ -672,6 +672,17 @@ export default function ChatPage() {
                           )}
 
                           <div className="bubble">
+                            {msg.fileUrl && (
+                              <div style={{ marginBottom: '8px' }}>
+                                {msg.fileUrl.match(/\.(jpeg|jpg|gif|png)$/i) ? (
+                                  <img src={msg.fileUrl} alt="attachment" style={{ maxWidth: '100%', borderRadius: '8px' }} />
+                                ) : (
+                                  <a href={msg.fileUrl} target="_blank" rel="noreferrer" style={{ color: '#10a8dc', textDecoration: 'underline' }}>
+                                    📎 Download Attachment
+                                  </a>
+                                )}
+                              </div>
+                            )}
                             {msg.content}
                           </div>
                         </div>
@@ -694,7 +705,46 @@ export default function ChatPage() {
                 <footer className="composer">
                   <div className="composer-inner">
                     <div className="input">
-                      <span className="plus">+</span>
+                      <span className="plus" onClick={() => document.getElementById('file-upload')?.click()}>+</span>
+                      <input 
+                        id="file-upload"
+                        type="file" 
+                        style={{ display: 'none' }}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file || !activeConversationId || !user) return;
+                          
+                          // Optimistic message for file
+                          const clientMessageId = generateClientMessageId();
+                          const optimisticMsg: Message = {
+                            id: -Date.now(),
+                            conversationId: activeConversationId,
+                            sender: user,
+                            content: `📎 ${file.name}`,
+                            fileUrl: null,
+                            replyTo: null,
+                            status: 'SENDING',
+                            clientMessageId,
+                            createdAt: new Date().toISOString(),
+                            reactions: [],
+                          };
+                          
+                          setMessages(prev => [...prev, optimisticMsg]);
+                          e.target.value = ''; // Reset input
+                          
+                          try {
+                            const result = await chatApi.uploadFile(file);
+                            await chatApi.sendMessageRest(activeConversationId, {
+                              content: `📎 ${file.name}`,
+                              clientMessageId,
+                              replyToId: null,
+                              fileUrl: result.fileUrl
+                            });
+                          } catch (err) {
+                            console.error('File upload failed:', err);
+                          }
+                        }}
+                      />
                       <input 
                         type="text"
                         placeholder="Type a message... (Press ? for shortcuts)"
