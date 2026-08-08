@@ -54,15 +54,15 @@ export default function LoginPage() {
         }
         .login-wrapper .app {
           zoom: 1.4;
-          width: calc(100vw / 1.4 - 8px);
-          height: calc(100vh / 1.4 - 18px);
+          width: calc(100vw / 1.4);
+          height: calc(100vh / 1.4);
           min-width: 700px;
           min-height: 500px;
           display: grid;
           grid-template-columns: 55% 45%;
           overflow: hidden;
           background: #080809;
-          border: 1px solid #6ea5ff;
+          border: none;
         }
         .login-wrapper .left {
           position: relative;
