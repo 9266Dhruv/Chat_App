@@ -7,6 +7,7 @@ import { useCommandPalette } from '@/hooks/useCommandPalette';
 import { useSound } from '@/hooks/useSound';
 import { CommandPalette } from '@/components/CommandPalette';
 import { KeyboardShortcutsModal } from '@/components/KeyboardShortcutsModal';
+import { CreateGroupModal } from '@/components/CreateGroupModal';
 import type { Message, TypingEvent, Conversation } from '@/types';
 import { generateClientMessageId } from '@/lib/utils';
 
@@ -21,6 +22,7 @@ export default function ChatPage() {
   const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [inputText, setInputText] = useState('');
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutsRef = useRef<Record<number, NodeJS.Timeout>>({});
   const typingThrottleRef = useRef<NodeJS.Timeout | null>(null);
@@ -571,6 +573,28 @@ export default function ChatPage() {
                 Search
               </div>
               <button 
+                onClick={() => setIsGroupModalOpen(true)}
+                style={{
+                  width: '35px',
+                  height: '35px',
+                  borderRadius: '11px',
+                  background: 'var(--bg-elevated)',
+                  color: 'var(--text-muted)',
+                  display: 'grid',
+                  placeItems: 'center',
+                  border: '1px solid var(--border)',
+                  cursor: 'pointer',
+                }}
+                title="Create Group"
+              >
+                <svg viewBox="0 0 24 24" fill="none" style={{ width: '16px' }}>
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <button 
                 onClick={togglePalette}
                 style={{
                   width: '35px',
@@ -801,6 +825,11 @@ export default function ChatPage() {
       <KeyboardShortcutsModal
         isOpen={showShortcuts}
         onClose={() => setShowShortcuts(false)}
+      />
+      <CreateGroupModal
+        isOpen={isGroupModalOpen}
+        onClose={() => setIsGroupModalOpen(false)}
+        onSelectConversation={(id) => setActiveConversationId(id)}
       />
     </>
   );
